@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dein Adventskalender</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:12px 14px 0;min-height:100vh;background:linear-gradient(#040a1a,#10244a 40%,#27456f 72%,#3a5d8a) fixed;color:#fff;font-family:Georgia,serif;text-align:center;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/90px 90px,radial-gradient(circle,rgba(255,255,255,.7) 0 1px,transparent 1.6px) 45px 30px/130px 130px}
+body::after{content:"";position:fixed;top:22px;right:22px;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fffbe8,#d9d3b4);box-shadow:0 0 34px rgba(255,250,220,.6);z-index:0;pointer-events:none}
+h1{font-size:30px;font-weight:normal;color:#ffd88a;text-shadow:0 0 16px rgba(255,200,100,.6);margin:10px 0 0;position:relative;z-index:1}
+#welt{--tw:min(340px,88vw);position:relative;z-index:1;isolation:isolate;max-width:560px;min-height:calc(100dvh - 70px);margin:0 auto;padding-bottom:50px}
+#welt::before,#welt::after{content:"";position:absolute;left:-40vw;right:-40vw;bottom:0}
+#welt::after{top:calc(var(--tw)*.7);background:linear-gradient(#6d90b8,#3d5f88);border-radius:50% 50% 0 0/80px 80px 0 0;z-index:0}
+#welt::before{top:calc(var(--tw)*.98);background:linear-gradient(#f6faff,#d3e3f3 55%,#a9c3de);border-radius:50% 50% 0 0/70px 70px 0 0;z-index:1}
+#baum{position:relative;z-index:2;width:var(--tw);margin:6px auto 0;line-height:0}
+#baum::before{content:"";position:absolute;left:-22%;right:-22%;top:-4%;bottom:6%;background:radial-gradient(ellipse at 50% 55%,rgba(110,220,150,.30),rgba(70,130,220,.12) 55%,transparent 72%);z-index:-1}
+#baum canvas{display:block;width:100%}
+#boden{position:relative;z-index:3;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;max-width:470px;margin:-14px auto 0;padding:0 6px}
+.g{position:relative;isolation:isolate;aspect-ratio:1;padding:14px 0 0;border:0;border-radius:6px;cursor:pointer;color:#5a1020;font:700 clamp(14px,4.4vw,22px) Georgia,serif;background:linear-gradient(rgba(0,0,0,.24) 22%,transparent 22%),linear-gradient(rgba(255,255,255,.18),rgba(0,0,0,.25)),var(--c);box-shadow:0 5px 8px rgba(0,0,0,.4);transform:rotate(var(--rot,0deg));transition:transform .2s}
+.g:hover{transform:rotate(var(--rot,0deg)) scale(1.1)}
+.g::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:42%;margin-left:-21%;background:linear-gradient(90deg,#c99a3a,#ffe29a,#c99a3a);z-index:-1}
+.g::after{content:"";position:absolute;top:0;left:15%;width:70%;height:30%;background:radial-gradient(ellipse 30% 45% at 25% 55%,#ffd88a 92%,transparent),radial-gradient(ellipse 30% 45% at 75% 55%,#ffd88a 92%,transparent),radial-gradient(ellipse 10% 18% at 50% 55%,#c99a3a 92%,transparent)}
+.g:nth-child(5n+1){--c:#c0392b}.g:nth-child(5n+2){--c:#1f7a4d}.g:nth-child(5n+3){--c:#2f62b8}.g:nth-child(5n+4){--c:#7b3fa0}.g:nth-child(5n){--c:#d9772b}
+.g.zu{--c:#46536a}.g.zu::before,.g.zu::after{filter:grayscale(1);opacity:.55}
+.g.auf{opacity:.6}
+
+#overlay{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:16px}
+#overlay.an{display:flex}
+#karte{width:100%;max-width:360px;max-height:calc(100dvh - 32px);overflow-y:auto;padding:14px 14px 18px;border-radius:18px;background:#162640;border:1px solid rgba(255,216,138,.4);box-shadow:0 20px 60px rgba(0,0,0,.6);animation:ein .6s ease}
+#karte.finale{background:linear-gradient(#3b2a10,#241808);border:2px solid gold;box-shadow:0 0 50px rgba(255,200,80,.5)}
+#text{font-size:18px;line-height:1.45;margin:14px 4px 16px}
+#karte button{padding:9px 22px;border:0;border-radius:10px;background:#c0392b;color:#fff;font-size:16px;cursor:pointer}
+.szene{position:relative;height:190px;border-radius:12px;overflow:hidden}
+.szene svg{position:absolute;inset:0;width:100%;height:100%}
+
+#schnee{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:5;--h:110vh}
+.fall,.steig{position:absolute;animation-timing-function:linear;animation-iteration-count:infinite;pointer-events:none}
+.fall{top:-24px;animation-name:fallen}.steig{bottom:-30px;animation-name:steigen}
+@keyframes fallen{to{transform:translateY(var(--h,220px)) rotate(200deg)}}
+@keyframes steigen{to{transform:translateY(-240px)}}
+.dot{display:block;width:1em;height:1em;border-radius:50%;background:radial-gradient(#fff,rgba(255,255,255,.35));box-shadow:0 0 6px rgba(255,255,255,.8)}
+.conf b{display:block;width:6px;height:10px}
+.bub{display:block;width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,.7)}
+
+.tw{animation:tw 2.4s ease-in-out infinite}@keyframes tw{50%{opacity:.25}}
+.puls{transform-box:fill-box;transform-origin:center;animation:puls 1.1s ease-in-out infinite}@keyframes puls{0%,100%{transform:scale(1)}15%{transform:scale(1.13)}30%{transform:scale(1)}45%{transform:scale(1.08)}}
+.skate{animation:skate 5s ease-in-out infinite}@keyframes skate{0%{transform:translate(-110px,0) rotate(-3deg)}50%{transform:translate(120px,-5px) rotate(2deg)}100%{transform:translate(380px,0) rotate(-3deg)}}
+.swim{animation:swim 9s linear infinite}@keyframes swim{0%{transform:translate(-90px,0)}25%{transform:translate(60px,-8px)}50%{transform:translate(160px,5px)}75%{transform:translate(260px,-8px)}100%{transform:translate(400px,0)}}
+.fl{transform-box:fill-box;transform-origin:20% 10%;animation:fl 1.2s ease-in-out infinite alternate}@keyframes fl{from{transform:rotate(-22deg)}to{transform:rotate(22deg)}}
+.fly{animation:fly 8s linear infinite}@keyframes fly{0%{transform:translate(-190px,10px)}50%{transform:translate(120px,-8px)}100%{transform:translate(420px,8px)}}
+.schuss{animation:schuss 3.4s ease-in infinite backwards}@keyframes schuss{0%{transform:translate(300px,-10px);opacity:0}8%{opacity:1}65%{opacity:1}100%{transform:translate(-60px,120px);opacity:0}}
+.lid{transform-box:fill-box;transform-origin:center;animation:lid 3.2s ease-in-out infinite}@keyframes lid{0%,20%{transform:none}40%,70%{transform:translate(-10px,-36px) rotate(-9deg)}90%,100%{transform:none}}
+.flamme{transform-box:fill-box;transform-origin:50% 100%;animation:fm .5s ease-in-out infinite alternate}@keyframes fm{from{transform:scale(.94,1.04) skewX(-3deg)}to{transform:scale(1.04,.95) skewX(3deg)}}
+.wipp{transform-box:fill-box;transform-origin:50% 100%;animation:wp 2.4s ease-in-out infinite alternate}@keyframes wp{from{transform:rotate(-1.8deg)}to{transform:rotate(1.8deg)}}
+@keyframes ein{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<script>
+window.onerror=function(m,s,l){var d=document.createElement('pre');d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99;background:#900;color:#fff;font:12px monospace;padding:6px;white-space:pre-wrap;text-align:left';d.textContent='Fehler: '+m+' (Zeile '+l+')';document.body.appendChild(d)};
+</script>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070d1f"/><stop offset="1" stop-color="#1d3557"/></linearGradient>
+<linearGradient id="gW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a0f1c"/><stop offset="1" stop-color="#12040a"/></linearGradient>
+<linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b4a6f"/><stop offset="1" stop-color="#052a45"/></linearGradient>
+<linearGradient id="gF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dff1fb"/><stop offset="1" stop-color="#9cc4de"/></linearGradient>
+<radialGradient id="rM" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#bdb79b"/></radialGradient>
+<radialGradient id="rH" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ff8a9a"/><stop offset=".5" stop-color="#e0203f"/><stop offset="1" stop-color="#8c0f24"/></radialGradient>
+<radialGradient id="rG"><stop offset="0" stop-color="#ffb347" stop-opacity=".9"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+<radialGradient id="rS" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#9ab5d3"/></radialGradient>
+<filter id="bl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+</defs></svg>
+
+<div id="schnee"></div>
+<h1>Für dich Valerie</h1>
+<div id="welt"><div id="baum"></div><div id="boden"></div></div>
+
+<div id="overlay" onclick="schliessen()">
+<div id="karte" onclick="event.stopPropagation()">
+<div id="szene" class="szene"></div>
+<p id="text"></p>
+<button onclick="schliessen()">Schließen</button>
+</div>
+</div>
+
+<script>
+// true = alle Geschenke offen (zum Testen). Vor dem Verschicken auf false stellen!
+const TESTMODUS = false;
+
+// Ungerade Geschenke = Text, gerade Geschenke = Szene mit Text
+const tuerchen = {
+1: { text: "Yoooo, was geht aaabbbb! Ab heute warten 24 kleine Überraschungen auf dich. Ich hoffe dir gefällt es, ich hab zum ersten mal etwas Programmiert. ❤️" },
+2: { szene: "eis", text: "Ich musste dabei an dich denken." },
+3: { text: "Weißt du, was das schönste an meinem Tag ist? Zu wissen, dass es dich gibt. Manchmal reicht schon eine einzige Nachricht von dir, um meinen ganzen Tag besser zu machen." },
+4: { szene: "schildkroete", text: "Ich weiß du liebst sie... ganz langsam zusammen durch das Leben gehen und jeden Moment genießen mit dir, wie diese Schildkröte." },
+5: { text: "Ich bin wirklich stolz auf dich, auf alles was du jeden Tag machst. Dein Training, die Schule und einfach wie du Tag für Tag dein bestes gibst auch wenn es mal hart ist. Das verdient so viel Anerkennung und ich möchte sie dir schenken" },
+6: { szene: "schnee", text: "Wenn die Kälte kommt, ich wärme dich, ich werde immer für dich da sein" },
+7: { text: "Dein Lächeln strahlt heller als das Licht der Sonne. Egal wo ich bin, ich denke daran, es ist bei mir wie das Licht" },
+8: { szene: "herz", text: "Wenn ich mein Herz verschenken könnte, würde es deinen Namen tragen, Valerie." },
+9: { text: "Mit dir fühlt sich selbst ein grauer Dezembertag warm an. Ich brauch keinen perfekten Ort , keinen besonderen Anlass... es reicht das du bei mir bist." },
+10: { szene: "mond", text: "Zwischen all den Sternen bist du mein Mond." },
+11: { text: "Du bist stärker, als du denkst, ich weiß das. Falls du das jemals vergisst, bin ich da um dich daran zu erinnern. Du musst nicht immer alles schaffen, nicht immer stark sein, perfekt sein oder lächeln. Ich had dich so lieb wie du bist. ❤️" },
+12: { szene: "schlitten", text: "Ho ho ho, die Rentiere sind unterwegs! Ange wurde bereits geholt, die Wichtel arbeiten also" },
+13: { text: "In meinem Leben sah ich schon viele Augen. Grau, Blau, Grün, so bitte steh immer mit ihnen strahlend vor meiner Tür, denn verliebt bin ich in deine" },
+14: { szene: "geschenk", text: " Dieses Geschenk ist vielleicht nur klein und nicht real, aber  es kommt von Herzen. Denn was ich dir geben kann, ist meine Zeit, meine Aufmerksamkeit und meine Anstrengungen." },
+15: { text: "Ich freue mich auf jede gemeinsame Minute, Stunde, Tage mit dir. Egal wie kurz sie sind, Hauptsache sie sind mit dir" },
+16: { szene: "kerze", text: "Ein Moment zum Entspannen und Kuscheln. Ich wünschte ich könnte jetzt bei dir sein" },
+17: { text: "Du siehst einfach wunderschön aus, egal was du trägst. Ich konnte es nicht einmal beschreiben." },
+18: { szene: "schneemann", text: "Der Schneemann wird schmelzen, aber eine Sache wird bleiben: dein Lächeln das du haben wirst wenn du Tag für Tag diese Türchen öffnest." },
+19: { text: "Wenn du auf dem Eis stehst, bin ich dein größter Fan, auch wenn ich nicht da bin" },
+20: { szene: "herzen", text: "Die letzten vier Tage, bis zum Fest der Liebe." },
+21: { text: "Egal was kommt: Ich bin an deiner Seite." },
+22: { szene: "sternschnuppe", text: "Wünsch dir was und ich erfülle es dir, egal was." },
+23: { text: "Morgen ist Weihnachten, aber vorher möchte ich dir noch etwas sagen. Du bedeutest mir unglaublich viel, du hast das Jahr für mich so viel schöner gemacht und dank dir war dieses Jahr sehr besonders für mich, es könnte nicht besser enden." },
+24: { szene: "baum", text: "Frohe Weihnachten! Du bist mein schönstes Geschenk, eins das ich niemals hergeben würde. Ich freue mich auf dich. Ich hoffe ich konnte dir hiermit jeden Tag eine freude machen und das du dich an schwereren Tagen hierdurch besser fühlen konntest. ❤️" }
+};
+
+// ---------- Hilfsfunktionen ----------
+const S = x => '<svg viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice">' + x + '</svg>';
+const st = n => { let h = ''; for (let i = 0; i < n; i++) h += '<circle class="tw" cx="' + (Math.random() * 300 | 0) + '" cy="' + (Math.random() * 110 | 0) + '" r="' + (.6 + Math.random() * 1.2).toFixed(1) + '" fill="#fff" style="animation-delay:-' + (Math.random() * 2).toFixed(1) + 's"/>'; return h; };
+const streuen = (arr, n, k, a, b) => { a = a || 3; b = b || 8; let h = ''; for (let i = 0; i < n; i++) h += '<span class="' + k + '" style="left:' + (Math.random() * 95).toFixed(1) + '%;font-size:' + (a + Math.random() * (b - a)).toFixed(1) + 'px;animation-delay:-' + (Math.random() * 6).toFixed(1) + 's;animation-duration:' + (4 + Math.random() * 4).toFixed(1) + 's">' + arr[i % arr.length] + '</span>'; return h; };
+const H = c => '<svg viewBox="0 0 24 24" width="1em" height="1em"><path d="M12 21C4 14 2 9 2 6.5 2 4 4 2 6.5 2 8.5 2 11 3.5 12 6 13 3.5 15.5 2 17.5 2 20 2 22 4 22 6.5 22 9 20 14 12 21Z" fill="' + c + '"/></svg>';
+const kiefer = (x, y, s) => '<g transform="translate(' + x + ',' + y + ') scale(' + s + ')"><rect x="-3" width="6" height="12" fill="#3b2a1a"/><polygon points="0,-44 -16,-16 16,-16" fill="#0f3d2a"/><polygon points="0,-30 -20,2 20,2" fill="#14543a"/><polygon points="0,-14 -24,16 24,16" fill="#1a6b48"/></g>';
+const ren = x => '<g transform="translate(' + x + ',2)" fill="#05080f"><ellipse rx="13" ry="7"/><path d="M9 -3L17 -13L22 -12L20 -8L14 2Z"/><circle cx="22" cy="-13" r="4"/><path d="M22 -16L20 -26M20 -21L15 -24M22 -16L27 -25M26 -21L31 -22M-10 4L-18 14M-6 6L-8 16M8 6L16 14M10 5L12 16" stroke="#05080f" stroke-width="2" stroke-linecap="round" fill="none"/></g>';
+
+// ---------- Szenen ----------
+const szenen = {
+eis: () => S('<rect width="300" height="190" fill="url(#gN)"/>' + st(14) + '<rect y="120" width="300" height="70" fill="url(#gF)"/><path d="M0 152Q150 140 300 154" stroke="#fff" stroke-opacity=".6" fill="none"/><g transform="translate(0,150)"><g class="skate"><path d="M-120 8H0" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><rect x="-4" y="4" width="58" height="4" rx="2" fill="#dfe6ee" stroke="#8a97a8"/><path d="M0 4L2-36Q12-40 22-36L25-16Q46-14 50-6V4Z" fill="#fff" stroke="#b8c4d2"/><path d="M24-14L34-10M22-22L32-18" stroke="#9fb0c4" stroke-width="1.6"/></g></g>'),
+
+schildkroete: () => S('<rect width="300" height="190" fill="url(#gS)"/><path d="M0 170Q80 158 160 168T300 162V190H0Z" fill="#c9b27a"/><g transform="translate(0,85)"><g class="swim"><path class="fl" d="M-28 6Q-46 14-42 24Q-32 20-24 10Z" fill="#6f9a4b"/><path d="M-34 6Q-30-26 2-28Q34-26 38 6Z" fill="#5f9148" stroke="#2d4a2a" stroke-width="1.5"/><path d="M-14-20L-4-6H10L18-20M2-28V-6" stroke="#2d4a2a" fill="none" opacity=".6"/><ellipse cx="50" cy="-1" rx="10" ry="7" fill="#7fae56"/><circle cx="54" cy="-3" r="1.8" fill="#111"/><path class="fl" d="M22 6Q40 22 56 26Q50 14 32 2Z" fill="#6f9a4b"/></g></g>') + streuen(['<i class="bub"></i>'], 8, 'steig', 5, 9),
+
+schnee: () => S('<rect width="300" height="190" fill="url(#gN)"/>' + st(26) + '<circle cx="240" cy="40" r="16" fill="url(#rM)"/><path d="M0 120Q70 90 140 112T300 100V190H0Z" fill="#9db8d6"/><path d="M0 145Q90 118 170 140T300 130V190H0Z" fill="#e8f1fa"/>' + kiefer(60, 150, 1) + kiefer(105, 160, .8) + kiefer(225, 152, 1.1)) + streuen([''], 26, 'fall dot', 3, 7),
+
+herz: () => S('<rect width="300" height="190" fill="url(#gW)"/><circle cx="150" cy="92" r="70" fill="#ff2a55" opacity=".35" filter="url(#bl)"/><g class="puls"><path d="M150 150C70 98 78 40 118 40C136 40 146 52 150 62C154 52 164 40 182 40C222 40 230 98 150 150Z" fill="url(#rH)"/><path d="M104 66Q108 52 124 50" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".6"/></g>') + streuen([H('#ff6a86')], 6, 'steig', 10, 18),
+
+mond: () => S('<rect width="300" height="190" fill="url(#gN)"/>' + st(40) + '<circle cx="150" cy="80" r="56" fill="#dfe8ff" opacity=".35" filter="url(#bl)"/><circle cx="150" cy="80" r="46" fill="url(#rM)"/><g fill="#b9b392" opacity=".55"><circle cx="135" cy="68" r="9"/><circle cx="168" cy="92" r="12"/><circle cx="150" cy="108" r="6"/></g><path d="M0 190V165Q70 150 140 164T300 158V190Z" fill="#070d1a"/>'),
+
+schlitten: () => S('<rect width="300" height="190" fill="url(#gN)"/>' + st(34) + '<circle cx="225" cy="62" r="34" fill="url(#rM)"/><path d="M0 190V158L34 142L70 158L110 132L150 148L190 138L230 154L300 140V190Z" fill="#0b1426"/><g transform="translate(0,62)"><g class="fly" fill="#05080f"><path d="M-6 16Q-10 24 6 24H52Q62 24 60 12" stroke="#05080f" stroke-width="3" fill="none"/><path d="M0 2H52L48 20H6Z"/><circle cx="22" cy="-6" r="6"/><path d="M52 8L80 6M92 6L120 6" stroke="#05080f" stroke-width="1.4" fill="none"/>' + ren(86) + ren(124) + '</g></g>'),
+
+geschenk: () => S('<rect width="300" height="190" fill="url(#gW)"/><rect y="162" width="300" height="28" fill="#2a1410"/><rect x="105" y="100" width="90" height="64" fill="#b8283a"/><rect x="145" y="100" width="10" height="64" fill="#e8c46a"/><g class="lid"><rect x="100" y="80" width="100" height="24" rx="3" fill="#a82a38"/><rect x="145" y="80" width="10" height="24" fill="#e8c46a"/><ellipse cx="132" cy="72" rx="18" ry="10" fill="#e8c46a" transform="rotate(-18 132 72)"/><ellipse cx="168" cy="72" rx="18" ry="10" fill="#e8c46a" transform="rotate(18 168 72)"/></g>') + streuen(['<i class="dot" style="background:#ffe29a"></i>'], 10, 'steig', 3, 6),
+
+kerze: () => S('<rect width="300" height="190" fill="url(#gW)"/><circle cx="150" cy="80" r="85" fill="url(#rG)"/><rect x="132" y="95" width="36" height="80" rx="4" fill="#f4e7c3"/><rect x="149" y="86" width="2" height="10" fill="#333"/><g class="flamme"><path d="M150 50C139 68 137 80 150 90C163 80 161 68 150 50Z" fill="#ffa62b"/><path d="M150 66C145 76 146 84 150 88C154 84 155 76 150 66Z" fill="#fff7c8"/></g>' + st(8)),
+
+schneemann: () => S('<rect width="300" height="190" fill="url(#gN)"/>' + st(24) + '<path d="M0 150Q90 128 170 146T300 138V190H0Z" fill="#e8f1fa"/><g class="wipp"><path d="M124 100L92 82M92 82L88 70M176 100L208 84M208 84L214 74" stroke="#5a3a22" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="150" cy="150" r="34" fill="url(#rS)"/><circle cx="150" cy="104" r="26" fill="url(#rS)"/><circle cx="150" cy="66" r="19" fill="url(#rS)"/><circle cx="143" cy="62" r="2.2" fill="#111"/><circle cx="157" cy="62" r="2.2" fill="#111"/><polygon points="150,68 176,72 150,74" fill="#f08a24"/><path d="M132 82Q150 92 168 82L168 90Q150 100 132 90Z" fill="#c0392b"/><ellipse cx="150" cy="50" rx="24" ry="5" fill="#111"/><rect x="137" y="28" width="26" height="22" fill="#1a1a1a"/><rect x="137" y="44" width="26" height="5" fill="#c0392b"/></g>') + streuen([''], 22, 'fall dot', 3, 6),
+
+herzen: () => S('<rect width="300" height="190" fill="url(#gW)"/>') + streuen([H('#ff4d6d'), H('#ff8fa3'), H('#e0203f'), H('#ffb3c1')], 18, 'steig', 14, 30),
+
+sternschnuppe: () => S('<rect width="300" height="190" fill="url(#gN)"/>' + st(60) + '<g class="schuss"><line x1="0" y1="0" x2="60" y2="-24" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".6"/><circle r="3.5" fill="#fff"/></g><g class="schuss" style="animation-delay:1.7s"><line x1="0" y1="20" x2="45" y2="2" stroke="#cfe0ff" stroke-width="2" stroke-linecap="round" opacity=".5"/><circle cy="20" r="2.4" fill="#fff"/></g><path d="M0 190V160Q70 146 140 160T300 152V190Z" fill="#070d1a"/>' + kiefer(40, 168, .8) + kiefer(250, 165, .9)),
+
+baum: () => S('<rect width="300" height="190" fill="url(#gN)"/>' + st(40) + '<path d="M0 170Q80 156 150 166T300 160V190H0Z" fill="#e8f1fa"/><g transform="translate(90,8) scale(1.1)"><rect x="52" y="126" width="16" height="32" fill="#6b4226"/><polygon points="60,70 108,128 12,128" fill="#18692f"/><polygon points="60,40 98,100 22,100" fill="#1f7a3d"/><polygon points="60,12 88,66 32,66" fill="#2a9150"/><polygon points="60,0 64,9 74,9 66,15 69,25 60,19 51,25 54,15 46,9 56,9" fill="#ffd84d" class="tw"/><circle cx="54" cy="34" r="3.5" fill="#ff5a5a" class="tw"/><circle cx="42" cy="80" r="4" fill="#5ab4ff" class="tw"/><circle cx="70" cy="72" r="4" fill="#ffd84d" class="tw"/><circle cx="34" cy="118" r="4.5" fill="#ff5a5a" class="tw"/><circle cx="84" cy="120" r="4.5" fill="#5ab4ff" class="tw"/></g>') + streuen(['<b style="background:#ff5a5a"></b>', '<b style="background:#ffd84d"></b>', '<b style="background:#5ab4ff"></b>', '<b style="background:#5aff8a"></b>'], 34, 'fall conf', 1, 1)
+};
+
+// ---------- Logik ----------
+// Dezember = Monat 11 (JavaScript zählt ab 0)
+const istOffen = nr => TESTMODUS || new Date() >= new Date(2026, 11, nr);
+
+function oeffne(nr) {
+const sz = document.getElementById('szene'), tx = document.getElementById('text'), ok = istOffen(nr);
+sz.style.display = 'none'; sz.innerHTML = '';
+document.getElementById('karte').classList.toggle('finale', nr === 24 && ok);
+if (!ok) {
+tx.textContent = 'Valerie, noch nicht, hab Geduld. Dieses Geschenk öffnet schon noch. Undzwar  am ' + nr + '. Dezember.';
+} else {
+const t = tuerchen[nr];
+tx.textContent = t.text;
+if (t.szene) { sz.innerHTML = szenen[t.szene](); sz.style.display = 'block'; }
+}
+document.getElementById('overlay').classList.add('an');
+}
+
+function schliessen() {
+document.getElementById('overlay').classList.remove('an');
+document.getElementById('szene').innerHTML = '';
+}
+
+// 24 Geschenke unter den Baum legen
+const boden = document.getElementById('boden');
+for (let nr = 1; nr <= 24; nr++) {
+const b = document.createElement('button');
+b.className = 'g' + (istOffen(nr) ? '' : ' zu');
+b.textContent = nr;
+b.style.setProperty('--rot', ((nr * 37 % 7) - 3) * 0.9 + 'deg');
+b.onclick = () => { oeffne(nr); if (istOffen(nr)) b.classList.add('auf'); };
+boden.appendChild(b);
+}
+
+document.getElementById('schnee').innerHTML = streuen([''], 55, 'fall dot', 2, 6);
+
+// ---------- Baum aus bunten Zeichen ----------
+(function () {
+const box = document.getElementById('baum');
+const COLS = 40, ROWS = 47;
+const ZEICHEN = '0123456789ABCDEFGHKMNRSTXY';
+const FARBEN = ['#ff2d2d', '#ffc107', '#2f8bff', '#ff4fa3', '#ffffff', '#ff2d2d', '#ffc107', '#7dff6a'];
+let seed = 7;
+const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+
+// 1) Den Baum als kleines Bild zeichnen (1 Pixel = 1 Zeichen)
+const c = document.createElement('canvas');
+c.width = COLS; c.height = ROWS;
+const x = c.getContext('2d');
+x.scale(COLS / 120, ROWS / 140);
+x.fillStyle = '#8a5a30'; x.fillRect(53, 108, 14, 32);
+const T = [[58, 116, 54, '#1f9d4a'], [36, 88, 42, '#2fc15f'], [14, 58, 30, '#5be07f']];
+for (const t of T) {
+x.fillStyle = t[3]; x.beginPath();
+x.moveTo(60, t[0]); x.lineTo(60 + t[2], t[1]); x.lineTo(60 - t[2], t[1]); x.closePath(); x.fill();
+x.lineWidth = 2; x.strokeStyle = '#0c4d25'; x.stroke();
+x.fillStyle = '#f2f8ff'; x.beginPath(); x.ellipse(60, t[1] - 1, t[2] * .8, 3.2, 0, 0, 7); x.fill();
+}
+x.lineWidth = 3.4; x.lineCap = 'round';
+[['#e03a3a', 46, 34, 60, 42, 74, 34], ['#f4b63f', 38, 64, 60, 76, 82, 64], ['#e03a3a', 27, 94, 60, 108, 93, 94]].forEach(g => {
+x.strokeStyle = g[0]; x.beginPath(); x.moveTo(g[1], g[2]); x.quadraticCurveTo(g[3], g[4], g[5], g[6]); x.stroke();
+});
+for (let i = 0; i < 70; i++) {
+const t = T[rnd() < .45 ? 0 : rnd() < .6 ? 1 : 2];
+const y = t[0] + 10 + rnd() * (t[1] - t[0] - 16);
+const h = t[2] * (y - t[0]) / (t[1] - t[0]) * .82;
+x.fillStyle = FARBEN[rnd() * FARBEN.length | 0];
+x.beginPath(); x.arc(60 + (rnd() * 2 - 1) * h, y, 4.2 + rnd() * 2, 0, 7); x.fill();
+}
+x.fillStyle = '#f5c542'; x.beginPath();
+for (let i = 0; i < 10; i++) {
+const r = i % 2 ? 4.5 : 10, a = -Math.PI / 2 + i * Math.PI / 5;
+x.lineTo(60 + r * Math.cos(a), 10 + r * Math.sin(a));
+}
+x.fill();
+
+// 2) Jeden Bildpunkt auslesen und merken
+const d = x.getImageData(0, 0, COLS, ROWS).data;
+const zellen = [], leer = [], funken = [];
+for (let i = 0; i < COLS * ROWS; i++) {
+if (d[i * 4 + 3] > 110) zellen.push({ i, r: d[i * 4], g: d[i * 4 + 1], b: d[i * 4 + 2], ch: ZEICHEN[rnd() * ZEICHEN.length | 0], p: rnd() * 6.28 });
+else leer.push(i);
+}
+for (let k = 0; k < 28; k++) funken.push({ i: leer[rnd() * leer.length | 0], p: rnd() * 6.28 });
+
+// 3) Als bunte Zeichen anzeigen
+const cv = document.createElement('canvas');
+box.appendChild(cv);
+const ctx = cv.getContext('2d');
+let cell;
+function groesse() {
+const w = box.clientWidth, dpr = window.devicePixelRatio || 1;
+cell = w / COLS;
+cv.width = w * dpr; cv.height = cell * ROWS * dpr;
+cv.style.height = cell * ROWS + 'px';
+ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+ctx.font = 'bold ' + (cell * 1.3) + 'px monospace';
+ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+}
+function bild(t) {
+ctx.clearRect(0, 0, COLS * cell, ROWS * cell);
+for (const z of zellen) {
+if (Math.random() < .05) z.ch = ZEICHEN[Math.random() * ZEICHEN.length | 0];
+const f = .95 + .2 * Math.sin(t / 350 + z.p);
+ctx.fillStyle = 'rgb(' + Math.min(255, z.r * f | 0) + ',' + Math.min(255, z.g * f | 0) + ',' + Math.min(255, z.b * f | 0) + ')';
+ctx.fillText(z.ch, (z.i % COLS + .5) * cell, ((z.i / COLS | 0) + .5) * cell);
+}
+for (const s of funken) {
+ctx.fillStyle = 'rgba(255,255,255,' + (.5 + .5 * Math.sin(t / 260 + s.p)).toFixed(2) + ')';
+ctx.fillText('*', (s.i % COLS + .5) * cell, ((s.i / COLS | 0) + .5) * cell);
+}
+}
+groesse(); bild(0);
+setInterval(() => bild(performance.now()), 110);
+window.addEventListener('resize', groesse);
+})();
+</script>
+</body>
+</html>
